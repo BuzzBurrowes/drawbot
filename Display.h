@@ -1,10 +1,11 @@
 #pragma once
 #include <Arduino.h>
 #include <LiquidCrystal.h>
+#include <stdint.h>
 #include <Streaming.h>
 
-#define _CURSOR(x,y) Display::_CURSOR((x),(y))
-#define _BLINK(b) Display::_BLINK(b)
+#define _CURSOR(x,y) Display::_Cursor((x),(y))
+#define _BLINK(b) Display::_Blink(b)
 
 class Display : public Print {
 public:
@@ -26,19 +27,19 @@ public:
    void SetCursor(uint8_t x, uint8_t y) { mCursorX = x; mCursorY = y; } 
    void Blink(bool blink) { mBlink = blink; }
 
-   virtual size_t write(uint8_t byte);
+   virtual size_t write(uint8_t byte) override;
 
-   struct _CURSOR
+   struct _Cursor
    {
       uint8_t x;
       uint8_t y;
-      explicit _CURSOR(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
+      explicit _Cursor(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
    };
 
-   struct _BLINK
+   struct _Blink
    {
       bool blink;
-      explicit _BLINK(bool b) : blink(b) {}
+      explicit _Blink(bool b) : blink(b) {}
    };
 
 private:
@@ -54,10 +55,10 @@ private:
    void _Refresh(bool flip);
 };
 
-inline Display& operator <<(Display& d, const Display::_CURSOR& pos)
+inline Display& operator <<(Display& d, const Display::_Cursor& pos)
 { d.SetCursor(pos.x, pos.y); return d; } 
 
-inline Display& operator <<(Display& d, const Display::_BLINK& b)
+inline Display& operator <<(Display& d, const Display::_Blink& b)
 { d.Blink(b.blink); return d; } 
 
 template<class T> 
@@ -75,3 +76,5 @@ inline Display& operator <<(Display& d, const _FLOAT& arg)
 
 inline Display& operator <<(Display& d, _EndLineCode arg) 
 { d.println(); return d; }
+
+extern Display theDisplay;

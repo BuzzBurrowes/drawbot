@@ -5,8 +5,8 @@
 
 #include "Display.h"
 #include "Steppers.h"
+#include "Menu.h"
 
-Display  theDisplay;
 Steppers theSteppers;
 
 void setup() {
@@ -14,12 +14,14 @@ void setup() {
    
    theDisplay.Setup();
    theSteppers.Setup();
+   theUiMaster.Setup();
 
    theDisplay << _BLINK(true) << _CURSOR(0,0) << 128 << endl << _BLINK(false) << _FLOAT(123.4245f, 3);
-   theSteppers.MoveTo({0.0f, 1.0f});
+   // theSteppers.MoveTo({0.0f, 1.0f});
 }
 
 void loop() {
   theSteppers.Poll();
   theDisplay.Poll();
+  theUiMaster.Poll();
 }

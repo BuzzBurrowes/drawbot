@@ -1,18 +1,21 @@
 #pragma once
 
+typedef void (*UiCallbackFunc)();
 class UiElement {
 public:
    UiElement(const char* name);
-   UiElement(const char* name, std::function<void()> drawContentFunc,
-      std::function<void()> pollFunc);
-   void DrawContent() { mDrawContentFunc(); }
-   void Poll()        { mPollFunc();        }
-   void SetNext(UiElement* next) { mNext = next; }
+   UiElement(const char* name, UiCallbackFunc drawContentFunc,
+      UiCallbackFunc pollFunc);
+   const char* GetName()         { return mName;       }
+   void DrawContent()            { mDrawContentFunc(); }
+   void Poll()                   { mPollFunc();        }
+   void SetNext(UiElement* next) { mNext = next;       }
+   UiElement* GetNext()          { return mNext;       }
 
 private:
    const char* mName = nullptr;
-   std::function<void()> mDrawContentFunc;
-   std::function<void()> mPollFunc;  
+   UiCallbackFunc mDrawContentFunc;
+   UiCallbackFunc mPollFunc;  
    UiElement* mNext = nullptr;
 };
 
@@ -23,9 +26,8 @@ public:
    void Add(UiElement& element);
 
 private:
-   uint8_t mCurrentItem = 0;
-   uint8_t mNumItems = 0;
-   UiElement *mFirstChild = nullptr;
+   UiElement* mCurrentItem = nullptr;
+   UiElement* mFirstChild = nullptr;
 };
 
 class UiMaster {
@@ -35,6 +37,9 @@ public:
    void Poll();
    void DrawContent(float& content);
    void FloatEditor(float& content);
+   void SetCurrentUiElement(UiElement* el);
+private:
+   UiElement* mCurrentUiElement = nullptr;
 };
 
 extern UiMaster theUiMaster;

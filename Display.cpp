@@ -3,6 +3,8 @@
 
 #include "Display.h"
 
+Display  theDisplay;
+
 Display::Display()
    : mLcd(kPinRS, kPinEnable, kPinD0, kPinD1, kPinD2, kPinD3)
    , mBufferDirty(true)
