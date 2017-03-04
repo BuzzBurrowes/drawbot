@@ -47,12 +47,13 @@ size_t Display::write(uint8_t byte) {
 }
 
 void Display::_Refresh(bool flip) {
-   if (flip)
+   if (flip) {
       mCurrentDisplay = !mCurrentDisplay;
+      mNextFlipMs = millis() + kBlinkRateMs;
+   }
    mLcd.setCursor(0,0);
    mLcd.print(mDisplayBuffer[mCurrentDisplay][0]);
    mLcd.setCursor(0,1);
    mLcd.print(mDisplayBuffer[mCurrentDisplay][1]);
    mBufferDirty = false;
-   mNextFlipMs = millis() + kBlinkRateMs;
 }

@@ -6,9 +6,10 @@ public:
    UiElement(const char* name);
    UiElement(const char* name, UiCallbackFunc drawContentFunc,
       UiCallbackFunc pollFunc);
+
    const char* GetName()         { return mName;       }
-   void DrawContent()            { mDrawContentFunc(); }
-   void Poll()                   { mPollFunc();        }
+   void DrawContent()            { if (mDrawContentFunc) mDrawContentFunc(); }
+   void Poll()                   { if (mPollFunc) mPollFunc();        }
    void SetNext(UiElement* next) { mNext = next;       }
    UiElement* GetNext()          { return mNext;       }
 

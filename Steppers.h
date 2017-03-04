@@ -11,15 +11,15 @@ public:
    bool Idle();
 
    static const int kNumSteppers = 2;
-   static const int kMaxSpeed    = 500;
+   static const int kMaxSpeed    = 1000;
    static const uint8_t S0_0     = 10;
    static const uint8_t S0_1     = 11;
    static const uint8_t S0_2     = 12;
    static const uint8_t S0_3     = 13;
-   static const uint8_t S1_0     = A0;
-   static const uint8_t S1_1     = A1;
-   static const uint8_t S1_2     = A2;
-   static const uint8_t S1_3     = A3;
+   static const uint8_t S1_0     = A3;
+   static const uint8_t S1_1     = A2;
+   static const uint8_t S1_2     = A1;
+   static const uint8_t S1_3     = A0;
 
    void MoveTo(const Vec2dF& pos);
    void Move(float distanceCm);

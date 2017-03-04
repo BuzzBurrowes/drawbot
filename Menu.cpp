@@ -30,7 +30,7 @@ UiElement minSetpointElemnt("Min Setpoint",
 UiElement maxSetpointElement("Max Setpoint", 
           [](){ theUiMaster.DrawContent(theState.maxSetpoint); },
           [](){ theUiMaster.FloatEditor(theState.maxSetpoint); });
-UiMenu mainMenu("Main");
+UiMenu mainMenu("Main Menu");
 
 UiMaster::UiMaster() {
   
@@ -48,29 +48,32 @@ void UiMaster::Setup() {
 
 void UiMaster::Poll() {
   static int nextRefreshMs = 0;
-  if (nextRefreshMs < millis())
-  {
-    if (mCurrentUiElement)
-    {
-      theDisplay << _CURSOR(0,0) << mCurrentUiElement->GetName() << _CURSOR(0,1);
+  if (nextRefreshMs < millis()) {
+    if (mCurrentUiElement) {
+      theDisplay << _CURSOR(0,0) << mCurrentUiElement->GetName();
       mCurrentUiElement->Poll();
-    }    
+    }
+    nextRefreshMs = millis() + 30;    
   }
 }
 
 void UiMaster::DrawContent(float& content) {
-  theDisplay << content;
+  //theDisplay << content;
 }
 
 void UiMaster::FloatEditor(float& content) {
-
+  theDisplay << "Hello World!";
+  return;
 }
 
 void UiMaster::SetCurrentUiElement(UiElement* el) {
   mCurrentUiElement = el;
 }
 
-UiElement::UiElement(const char* name) : mName(name) {
+UiElement::UiElement(const char* name) 
+  : mName(name) 
+  , mDrawContentFunc(nullptr)
+  , mPollFunc(nullptr) {
 
 }
 
@@ -78,8 +81,7 @@ UiElement::UiElement(const char* name, UiCallbackFunc drawContentFunc,
       UiCallbackFunc pollFunc) 
   : mName(name)
   , mDrawContentFunc(drawContentFunc)
-  , mPollFunc(pollFunc)
-{
+  , mPollFunc(pollFunc) {
 
 }
 
