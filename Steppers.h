@@ -1,17 +1,24 @@
 #pragma once
+#define  USE_ACCELSTEPPER 0
+#if USE_ACCELSTEPPER
 #include <AccelStepper.h>
 #include <MultiStepper.h>
+#else
+#include "Stepper.h"
+#include "StepperSet.h"
+#endif
 #include "Vec2d.h"
 
 class Steppers {
 public:
    Steppers();
    void Setup() {}
+   void TestStepCount();
    void Poll();
    bool Idle();
 
    static const int kNumSteppers = 2;
-   static const int kMaxSpeed    = 1000;
+   static const int kMaxSpeed    = 35900;
    static const uint8_t S0_0     = 10;
    static const uint8_t S0_1     = 11;
    static const uint8_t S0_2     = 12;
@@ -28,8 +35,13 @@ public:
    const Vec2dF Heading() const  { return mHeading;  }
 
 private:
+#if USE_ACCELSTEPPER
    AccelStepper mStepper[2];
    MultiStepper mController;
+#else   
+   FourWireFullStepper mStepper[2];
+   StepperSet<FourWireFullStepper,2> mController;
+#endif
 
    Vec2dF mPosition;
    Vec2dF mHeading;
