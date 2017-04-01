@@ -1,7 +1,17 @@
+/*****************************************************************************
+   StepperSet
+   ==========
+   This is a templated class that can control synchronize multiple steppers. 
+   This allows for multiple steppers that can accelerate smoothly yet stay
+   in "lock step".
+
+   by Buzz Burrowes
+*****************************************************************************/
 #pragma once
 
-#include "Stepper.h"
+#include "AcceleratingStepperController.h"
 
+// STEPPERTYPE must be a class derived from AcceleratingStepperController.
 template <typename STEPPERTYPE, int NUMSTEPPERS>
 class StepperSet {
 public:

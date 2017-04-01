@@ -12,22 +12,12 @@ static const float kCartWidthMm          = 160.3375f;
 static const float kStepsPerRotation     = 2047.3f;
 
 Steppers::Steppers()
-#if USE_ACCELSTEPPER
-   : mStepper{{AccelStepper::HALF4WIRE, S0_0, S0_2, S0_1, S0_3},
-              {AccelStepper::HALF4WIRE, S1_0, S1_2, S1_1, S1_3}}
-#else
    : mStepper{{S0_0, S0_1, S0_2, S0_3},
               {S1_0, S1_1, S1_2, S1_3}}
    , mController{mStepper}
-#endif 
    , mHeading{1.0f, 0.0f} {
    for (int i = 0; i < kNumSteppers; ++i) { 
-#if USE_ACCELSTEPPER
-      mStepper[i].setMaxSpeed(kMaxSpeed);
-      mController.addStepper(mStepper[i]);
-#else
       mStepper[i].SetBalistics(500,500);
-#endif
    }
 }
 
@@ -37,51 +27,12 @@ void Steppers::SetZero() {
 }
 
 void Steppers::Poll() {
-#if USE_ACCELSTEPPER
-   mController.run();
-#else
    mController.Poll();
-#endif
 }
 
 void Steppers::TestStepCount() {
    static const int stepsPerRev = 4096;
    Serial.println("Running test...");
-
-#if USE_ACCELSTEPPER
-
-   mStepper[1].setAcceleration(kMaxSpeed);
-   mStepper[1].setSpeed(kMaxSpeed);
-   mStepper[1].setCurrentPosition(0);
-   mStepper[1].moveTo(stepsPerRev * 10);
-   mStepper[1].runSpeedToPosition();
-   //mStepper[1].runToNewPosition(stepsPerRev * 10);
-#else 
-#if 0
-   Serial << "Fixed Point Test\n";
-   SignedFixedPoint<8> fixed1;
-   fixed1 = 15.5f;
-   Serial << _HEX((int32_t)fixed1) << endl;
-   SignedFixedPoint<8> test(3);
-   Serial << _HEX((int32_t)test) << endl;
-   test+=fixed1;
-   Serial << _HEX((int32_t)test) << endl;
-   test*=fixed1;
-   Serial << _HEX((int32_t)test) << endl;
-   ++test;
-   Serial << _HEX((int32_t)test) << endl;
-   test/=fixed1;
-   Serial << _HEX((int32_t)test) << endl;
-   test*=2;
-   Serial << _HEX((int32_t)test) << endl;
-   test/=2;
-   Serial << _HEX((int32_t)test) << endl;
-   test+=4;
-   Serial << _HEX((int32_t)test) << endl;
-   test-=5;
-   Serial << _HEX((int32_t)test) << endl;
-   while(1);
-#endif
    int32_t targets[] {2048U * 5, (int32_t)-2048 * 5};
    mController.SetTargets(targets);
    mController.AwaitIdle();
@@ -90,16 +41,11 @@ void Steppers::TestStepCount() {
    targets[1] = 0;
    mController.SetTargets(targets);
    mController.AwaitIdle();
-#endif
    Serial.println("TEST DONE!");
 }
 
 bool Steppers::Idle() {
-#if USE_ACCELSTEPPER
-   return !mStepper[0].isRunning() && !mStepper[1].isRunning();
-#else
    return mController.Idle();
-#endif
 }
 
 void Steppers::AwaitArrival() {
@@ -152,21 +98,11 @@ void Steppers::TurnDegrees(float degrees) {
 
 void Steppers::_MoveRelative(long stepsL, long stepsR) {
    // make sure last move is finished...
-#if USE_ACCELSTEPPER
-   if (!Idle()) mController.runSpeedToPosition();
-#else
    mController.AwaitIdle();
-#endif
 
    Serial << "_MoveRelative: " << stepsL << ", " << stepsR << endl;
    long positions[2];
-#if USE_ACCELSTEPPER
-   positions[0] = mStepper[0].currentPosition() + stepsL;
-   positions[1] = mStepper[1].currentPosition() + stepsR;
-   mController.moveTo(positions);
-#else   
    positions[0] = mStepper[0].CurrentPosition() + stepsL;
    positions[1] = mStepper[1].CurrentPosition() + stepsR;
    mController.SetTargets(positions);
-#endif
 }

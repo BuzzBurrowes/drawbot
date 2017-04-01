@@ -4,8 +4,8 @@
 #include <AccelStepper.h>
 #include <MultiStepper.h>
 #else
-#include "Stepper.h"
 #include "StepperSet.h"
+#include "FourWireFullStepper.h"
 #endif
 #include "Vec2d.h"
 
@@ -39,13 +39,8 @@ public:
    const Vec2dF Heading() const  { return mHeading;  }
 
 private:
-#if USE_ACCELSTEPPER
-   AccelStepper mStepper[2];
-   MultiStepper mController;
-#else   
    FourWireFullStepper mStepper[2];
    StepperSet<FourWireFullStepper,2> mController;
-#endif
 
    Vec2dF mPosition;
    Vec2dF mHeading;

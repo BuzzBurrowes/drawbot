@@ -5,9 +5,7 @@
 #include <Servo.h>
 #include <math.h>
 
-#include "Display.h"
 #include "Steppers.h"
-#include "Menu.h"
 
 Steppers theSteppers;
 Servo thePenServo;
@@ -94,10 +92,8 @@ int FindSpiroStep(int numVerts, Vertex* vertBuffer) {
 void setup() {
    Serial.begin(115200);
    
-   theDisplay.Setup();
    theSteppers.Setup();
    thePenServo.attach(9);
-   theUiMaster.Setup();
 
    // theDisplay << _BLINK(true) << _CURSOR(0,0) << 128 << endl << _BLINK(false) << _FLOAT(123.4245f, 3);
 #if DRAW_SHAPE == SPIRO  
@@ -121,8 +117,6 @@ void setup() {
    theSteppers.AwaitArrival();
    theSteppers.SetZero();
    delay(5000);
-   //theSteppers.TestStepCount();
-   //while(1);
 }
 
 void loop() {
@@ -150,11 +144,5 @@ void loop() {
       }
    }
 
-   //while (!theSteppers.Idle())
-      theSteppers.Poll();
-   //theDisplay.Poll();
-   //static int x = 0;
-   //x++;
-   //theDisplay << _BLINK(true) << _CURSOR(0,0) << x << endl << _BLINK(false) << _FLOAT(123.4245f, 3);
-   theUiMaster.Poll();
+   theSteppers.Poll();
 }
