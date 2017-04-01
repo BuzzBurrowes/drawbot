@@ -16,7 +16,7 @@ public:
       
       // poll the master...
       mSteppers[mMasterIndex]->Poll(currentMics);
-      uint32_t fractionMasterStep = mSteppers[mMasterIndex]->GetFractionalStepInMove();
+      SignedFixedPoint<8> fractionMasterStep = mSteppers[mMasterIndex]->GetFractionalStepInMove();
       bool masterAtTarget = mSteppers[mMasterIndex]->AtTarget();
 
       // now deal with the slaves...
@@ -26,7 +26,7 @@ public:
                mSteppers[i]->MakeNextStepInMove();
                continue;
             }
-            int32_t matchingStep = (((int32_t)fractionMasterStep * mStepsPerMaster[i])+0x80) >> 16;
+            int32_t matchingStep = (mStepsPerMaster[i] == 1) ?  fractionMasterStep.Truncated() : (fractionMasterStep * mStepsPerMaster[i]).RoundToInt();
             while (matchingStep != mSteppers[i]->GetStepInMove()) {
                mSteppers[i]->MakeNextStepInMove();
             }
@@ -46,6 +46,12 @@ public:
          Poll();
    }
 
+   void Rest() {
+      for (int i = 0; i < NUMSTEPPERS; ++i) {
+         mSteppers[i]->Rest();
+      }
+   }
+
    void SetTargets(int32_t* targets) {
       mMasterIndex = 0;
       for (int i = 0; i < NUMSTEPPERS; ++i) {
@@ -53,14 +59,17 @@ public:
          if (i > 0 && mStepsPerMaster[i] > mStepsPerMaster[mMasterIndex])
             mMasterIndex = i;
       }
-      int32_t masterStepCount = mStepsPerMaster[mMasterIndex];
+      SignedFixedPoint<8> masterStepCount = mStepsPerMaster[mMasterIndex];
       for (int i = 0; i < NUMSTEPPERS; ++i) {
-         mStepsPerMaster[i] = (mStepsPerMaster[i]<<8) / masterStepCount;
+         if (mStepsPerMaster[i] == masterStepCount)
+            mStepsPerMaster[i] = 1;
+         else
+            mStepsPerMaster[i] /= masterStepCount;
       }
    }
 
 private:
    STEPPERTYPE* mSteppers[NUMSTEPPERS];
-   int32_t      mStepsPerMaster[NUMSTEPPERS];
+   SignedFixedPoint<8> mStepsPerMaster[NUMSTEPPERS];
    uint8_t      mMasterIndex {0xFF};
 };

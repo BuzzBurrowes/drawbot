@@ -4,9 +4,11 @@
 
 #include "Steppers.h"
 
-static const float kWheelDiameterMm      = 60.0f;
-static const float kWheelCircumferenceMm = (kWheelDiameterMm * M_PI);
-static const float kCartWidthMm          = 100.0f;
+//static const float kWheelDiameterMm      = 55.5f;
+//static const float kWheelCircumferenceMm = (kWheelDiameterMm * M_PI);
+//static const float kWheelCircumferenceMm = 291.34f; // 15 point star;
+static const float kWheelCircumferenceMm = 291.2f; // 15 point star;
+static const float kCartWidthMm          = 160.3375f;
 static const float kStepsPerRotation     = 2047.3f;
 
 Steppers::Steppers()
@@ -27,6 +29,11 @@ Steppers::Steppers()
       mStepper[i].SetBalistics(500,500);
 #endif
    }
+}
+
+void Steppers::SetZero() {
+   mPosition = {0.f,0.f};
+   mHeading = {1.f,0.f};
 }
 
 void Steppers::Poll() {
@@ -50,9 +57,35 @@ void Steppers::TestStepCount() {
    mStepper[1].runSpeedToPosition();
    //mStepper[1].runToNewPosition(stepsPerRev * 10);
 #else 
-   int32_t targets[] {4096U * 2, -2048 * 1};
+#if 0
+   Serial << "Fixed Point Test\n";
+   SignedFixedPoint<8> fixed1;
+   fixed1 = 15.5f;
+   Serial << _HEX((int32_t)fixed1) << endl;
+   SignedFixedPoint<8> test(3);
+   Serial << _HEX((int32_t)test) << endl;
+   test+=fixed1;
+   Serial << _HEX((int32_t)test) << endl;
+   test*=fixed1;
+   Serial << _HEX((int32_t)test) << endl;
+   ++test;
+   Serial << _HEX((int32_t)test) << endl;
+   test/=fixed1;
+   Serial << _HEX((int32_t)test) << endl;
+   test*=2;
+   Serial << _HEX((int32_t)test) << endl;
+   test/=2;
+   Serial << _HEX((int32_t)test) << endl;
+   test+=4;
+   Serial << _HEX((int32_t)test) << endl;
+   test-=5;
+   Serial << _HEX((int32_t)test) << endl;
+   while(1);
+#endif
+   int32_t targets[] {2048U * 5, (int32_t)-2048 * 5};
    mController.SetTargets(targets);
    mController.AwaitIdle();
+   return;
    targets[0] = 0;
    targets[1] = 0;
    mController.SetTargets(targets);
@@ -67,6 +100,14 @@ bool Steppers::Idle() {
 #else
    return mController.Idle();
 #endif
+}
+
+void Steppers::AwaitArrival() {
+   mController.AwaitIdle();
+}
+
+void Steppers::Rest() {
+   mController.Rest();
 }
 
 void Steppers::MoveTo(const Vec2dF& pos) {
@@ -103,6 +144,10 @@ void Steppers::Turn(float radians) {
    mHeading.Rotate(actualRadians);
    mHeading.Normalize();
    _MoveRelative(actualSteps, -actualSteps);   
+}
+
+void Steppers::TurnDegrees(float degrees) {
+   Turn((M_PI * degrees) / 180.f);
 }
 
 void Steppers::_MoveRelative(long stepsL, long stepsR) {

@@ -13,9 +13,12 @@ class Steppers {
 public:
    Steppers();
    void Setup() {}
+   void SetZero();
    void TestStepCount();
    void Poll();
    bool Idle();
+   void AwaitArrival();
+   void Rest();
 
    static const int kNumSteppers = 2;
    static const int kMaxSpeed    = 35900;
@@ -31,6 +34,7 @@ public:
    void MoveTo(const Vec2dF& pos);
    void Move(float distanceCm);
    void Turn(float radians);
+   void TurnDegrees(float degrees);
    const Vec2dF Position() const { return mPosition; }
    const Vec2dF Heading() const  { return mHeading;  }
 

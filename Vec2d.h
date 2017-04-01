@@ -5,6 +5,8 @@ class Vec2d {
 public:
    Vec2d() : mX(0), mY(0) {}
    Vec2d(T x, T y) : mX(x), mY(y) {}
+   Vec2d(const Vec2d<T>& other) : mX(other.mX), mY(other.mY) { }
+   void Set(T x, T y) { mX = x; mY = y; }
 
    T x() const { return mX; }
    T y() const { return mY; }
