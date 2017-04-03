@@ -22,10 +22,10 @@ public:
 
    static const int kNumSteppers = 2;
    static const int kMaxSpeed    = 35900;
-   static const uint8_t S0_0     = 10;
-   static const uint8_t S0_1     = 11;
-   static const uint8_t S0_2     = 12;
-   static const uint8_t S0_3     = 13;
+   static const uint8_t S0_0     = 4;
+   static const uint8_t S0_1     = 5;
+   static const uint8_t S0_2     = 6;
+   static const uint8_t S0_3     = 7;
    static const uint8_t S1_0     = A3;
    static const uint8_t S1_1     = A2;
    static const uint8_t S1_2     = A1;

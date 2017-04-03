@@ -7,6 +7,8 @@
 
 #include "Steppers.h"
 
+#define PEN_SERVO_PIN 2
+
 Steppers theSteppers;
 Servo thePenServo;
 
@@ -93,7 +95,7 @@ void setup() {
    Serial.begin(115200);
    
    theSteppers.Setup();
-   thePenServo.attach(9);
+   thePenServo.attach(PEN_SERVO_PIN);
 
    // theDisplay << _BLINK(true) << _CURSOR(0,0) << 128 << endl << _BLINK(false) << _FLOAT(123.4245f, 3);
 #if DRAW_SHAPE == SPIRO  
